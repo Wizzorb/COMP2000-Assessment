@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
+//This is a View in the MVC pattern.
 public class kioskUI {
     //public List<automatedCheckoutSystem> automated Checkout System = new ArrayList<automatedCheckoutSystem> ();
 
