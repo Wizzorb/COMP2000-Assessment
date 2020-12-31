@@ -8,6 +8,6 @@ public class stock {
 
     public float Price;
 
-    //public List<stockDatabase> stock Database = new ArrayList<stockDatabase> ();
+    //public List<Model.stockDatabase> stock Database = new ArrayList<Model.stockDatabase> ();
 
 }
