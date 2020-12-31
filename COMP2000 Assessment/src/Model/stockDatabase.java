@@ -17,7 +17,7 @@ public class stockDatabase {
     public Integer sID;
     public String sName;
     public Float sPrice;
-    File sFile = new File("COMP2000 Assessment/src/StockFile.txt");
+    File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
 
     //public List<Controller.automatedCheckoutSystem> automated Checkout System = new ArrayList<Controller.automatedCheckoutSystem> ();
 
@@ -36,7 +36,7 @@ public class stockDatabase {
 //end of modifiable zone(JavaCode)........E/876e8404-9140-4678-b7a0-ad44ef962fc6
     }
 
-    public void readStock() {
+    public void readStock(ArrayList<String> newStock) {
         /*try {
             int count = 0;
             Scanner stockReader = new Scanner(sFile);
@@ -62,7 +62,7 @@ public class stockDatabase {
             Scanner stockReader = new Scanner(sFile);
             while (stockReader.hasNextLine()) {
                 String data = stockReader.nextLine();
-                Stock.add(data);
+                newStock.add(data);
             }
             stockReader.close();
         } catch (FileNotFoundException e) {

@@ -3,7 +3,7 @@ package View;
 import javax.swing.*;
 
 public class KioskUI {
-    private JPanel panel1;
+    private JPanel loginScreen;
     private JButton adminButton;
     private JButton customerButton;
 
