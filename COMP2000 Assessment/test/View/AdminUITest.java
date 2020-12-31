@@ -1,13 +1,10 @@
-package Model;
+package View;
 
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class stockDatabaseTest {
-    stockDatabase testDB;
+class AdminUITest {
 
     @BeforeAll
     public static void setUpBefore() {
@@ -16,20 +13,15 @@ class stockDatabaseTest {
 
     @BeforeEach
     void setUp() {
-        System.out.println("** BEFORE **");
-        testDB = new stockDatabase();
     }
 
     @Test
-    public void testDBRead() {
-        ArrayList<String> testArray = new ArrayList<>();
-        testDB.readStock(testArray);
-        System.out.println(testArray);
+    public void testRead() {
+
     }
 
     @AfterEach
     void tearDown() {
-        System.out.println("** AFTER **");
     }
 
     @AfterAll
