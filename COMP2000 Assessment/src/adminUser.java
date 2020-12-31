@@ -4,7 +4,7 @@ public class adminUser {
 
     public String Password;
 
-    //public stockDatabase;
+    //public Model.stockDatabase;
 
     public void Login() {
 //begin of modifiable zone(JavaCode)......C/6d42c66c-fb7d-4b78-b41a-a43a8db4a71a
