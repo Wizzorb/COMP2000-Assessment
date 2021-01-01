@@ -23,7 +23,8 @@ class stockDatabaseTest {
     @Test
     public void testDBRead() {
         ArrayList<String> testArray = new ArrayList<>();
-        testDB.readStock(testArray);
+        testDB.readStock();
+        testArray.add(testDB.Stock.toString());
         System.out.println(testArray);
     }
 
