@@ -25,6 +25,7 @@ public class KioskUI extends JFrame {
     private JButton increaseButton;
     private JButton decreaseButton;
     private JButton backButton1;
+    private JTextPane dBTextPanel;
 
     stockDatabase kioskDB = new stockDatabase();
     ArrayList<String> kioskList = new ArrayList<>();
@@ -41,11 +42,19 @@ public class KioskUI extends JFrame {
         adminButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                switchPanel(kioskPanel, "adminCard");
-                dBTextArea.setLineWrap(true);
-                //kioskDB.readStock(kioskList);
-                automatedCheckoutSystem.dBRead(kioskList);
-                dBTextArea.setText(kioskList.toString());
+                String usernameInsert = JOptionPane.showInputDialog(kioskPanel, "Please insert admin Username.", null);
+                String passwordInsert = JOptionPane.showInputDialog(kioskPanel, "Please insert admin Password", null);
+                int auth = 0;
+                //automatedCheckoutSystem.adminLogin(usernameInsert, passwordInsert, auth);
+                if (usernameInsert == "admin" && passwordInsert == "password") {
+                    JOptionPane.showConfirmDialog(kioskPanel, "Incorrect credentials");
+                } else {
+                    switchPanel(kioskPanel, "adminCard");
+                    //kioskDB.readStock(kioskList);
+                    automatedCheckoutSystem.dBRead(basketList);
+                    kioskList.add(automatedCheckoutSystem.dBRead(basketList).toString());
+                    dBTextPanel.setText(kioskList.toString());
+                }
             }
         });
 
