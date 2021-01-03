@@ -1,17 +1,21 @@
 package Controller;
 
-import Model.*;
-import View.KioskUI;
-import java.util.*;
+import Model.stockDatabase;
+
+import java.util.ArrayList;
 
 //This is the Controller in the MVC pattern
 public class automatedCheckoutSystem {
 
-    public static ArrayList<String> dBRead(ArrayList<String> dBArray) {
+    public static ArrayList<String> dBRead(ArrayList<String> dBCall) {
         stockDatabase controlDB = new stockDatabase();
         controlDB.readStock();
-        dBArray = controlDB.getStock();
-        return dBArray;
+        dBCall.add(controlDB.getStock().toString());
+        return dBCall;
+        //dBRead().add(controlDB.getStock().toString());
+        //return dBRead();
+        //ArrayList<String> dBArray = controlDB.getStock();
+        //return dBArray;
     }
 
     /*public basketStock(int itemID) {
@@ -19,5 +23,14 @@ public class automatedCheckoutSystem {
         itemDB.readStock();
         ArrayList<String> basket = itemDB.getStock();
 
+    }*/
+
+    /*public static int adminLogin (String uName, String pWord, int auth) {
+        String aUsername = "admin";
+        String aPassword = "password";
+        if (uName == aUsername && pWord == aPassword) {
+           auth = 1;
+        }
+        return auth;
     }*/
 }
