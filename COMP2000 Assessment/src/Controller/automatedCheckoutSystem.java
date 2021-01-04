@@ -18,6 +18,12 @@ public class automatedCheckoutSystem {
         //return dBArray;
     }
 
+    /*public int requestSearchDB(int searchID) {
+        stockDatabase controlDB = new stockDatabase();
+        controlDB.searchDB(searchID);
+        return searchID;
+    }*/
+
     /*public basketStock(int itemID) {
         stockDatabase itemDB = new stockDatabase();
         itemDB.readStock();
