@@ -26,8 +26,10 @@ public class KioskUI extends JFrame {
     private JButton decreaseButton;
     private JButton backButton1;
     private JTextPane dBTextPanel;
+    private JScrollPane basketScroll;
 
     stockDatabase kioskDB = new stockDatabase();
+    automatedCheckoutSystem kioskSystem = new automatedCheckoutSystem();
     ArrayList<String> kioskList = new ArrayList<>();
     ArrayList<String> basketList = new ArrayList<>();
 
@@ -46,7 +48,7 @@ public class KioskUI extends JFrame {
                 String passwordInsert = JOptionPane.showInputDialog(kioskPanel, "Please insert admin Password", null);
                 int auth = 0;
                 //automatedCheckoutSystem.adminLogin(usernameInsert, passwordInsert, auth);
-                if (usernameInsert == "admin" && passwordInsert == "password") {
+                if (usernameInsert == "a" && passwordInsert == "p") {
                     JOptionPane.showConfirmDialog(kioskPanel, "Incorrect credentials");
                 } else {
                     switchPanel(kioskPanel, "adminCard");
@@ -69,13 +71,16 @@ public class KioskUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String scanInsert = JOptionPane.showInputDialog(customerPanel, "Please scan purchase ID below.", null);
-                Integer insertID = Integer.parseInt(scanInsert);
+                Integer insertID = Integer.parseInt(scanInsert.trim());
                 kioskDB.readStock();
                 kioskDB.searchDB(insertID);
-                basketList.add(kioskDB.sID, kioskDB.sID.toString());
-                basketList.add(kioskDB.sID+1, kioskDB.sName);
-                basketList.add(kioskDB.sID+2, kioskDB.sPrice.toString());
-                basketList.add(kioskDB.sID+3, kioskDB.sQuantity.toString());
+                basketList.add(String.valueOf(kioskDB.sID));
+                basketList.add(kioskDB.sName.trim());
+                basketList.add(kioskDB.sPrice.trim());
+                basketList.add(kioskDB.sQuantity.trim());
+                DefaultListModel<String> model = new DefaultListModel<>();
+                model.addElement(basketList.toString());
+                basketContent.setModel(model);
             }
         }));
     }
@@ -83,5 +88,9 @@ public class KioskUI extends JFrame {
     public void switchPanel(Container container, String panelName) {
         CardLayout card = (CardLayout) (container.getLayout());
         card.show(container, panelName);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }

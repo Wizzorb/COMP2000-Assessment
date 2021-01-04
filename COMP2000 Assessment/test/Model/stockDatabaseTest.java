@@ -28,6 +28,21 @@ class stockDatabaseTest {
         System.out.println(testArray);
     }
 
+    @Test
+    public void testDBScan() {
+        testDB.readStock();
+        testDB.searchDB(2);
+        try {
+            System.out.println(testDB.sID);
+            System.out.println(testDB.sName);
+            System.out.println(testDB.sPrice);
+            System.out.println(testDB.sQuantity);
+        } catch (NumberFormatException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     @AfterEach
     void tearDown() {
         System.out.println("** AFTER **");

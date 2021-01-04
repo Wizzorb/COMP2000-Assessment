@@ -2,6 +2,7 @@ package Model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.StandardProtocolFamily;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,10 +16,10 @@ public class stockDatabase {
     //ArrayList<String> sEntry = new ArrayList<>();
 
     ArrayList<String> Stock = new ArrayList<>();
-    public Integer sID;
-    public String sName;
-    public Float sPrice;
-    public Integer sQuantity;
+    public String sID;
+    public String sName = " ";
+    public String sPrice = "0.0";
+    public String sQuantity = "0";
     File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
 
     //public List<Controller.automatedCheckoutSystem> automated Checkout System = new ArrayList<Controller.automatedCheckoutSystem> ();
@@ -73,12 +74,28 @@ public class stockDatabase {
         }
     }
 
-    public void searchDB(int searchID) {
-        readStock();
-        sID = Stock.indexOf(searchID);
-        sName = Stock.get(sID + 1);
-        sPrice = sPrice.parseFloat(Stock.get(sID + 2));
-        sQuantity = Integer.parseInt(Stock.get(sID + 3));
+    public void searchDB(Integer searchID) {
+        try {
+            readStock();
+            //int posName = Stock.indexOf((searchID + 1));
+            //int posPrice = Stock.indexOf((searchID + 2));
+            //int postQuantity = Stock.indexOf((searchID + 3));
+            //sID = searchID;
+            //sName = Stock.get(searchID).trim();
+            //sPrice = Stock.get(searchID + 1).trim();
+            //sQuantity = Stock.get(searchID + 2).trim();
+            sID = searchID.toString();
+            Integer index = Stock.indexOf(sID);
+            Integer tempName = index + 1;
+            Integer tempPrice = index + 2;
+            Integer tempQuantity = index + 3;
+            sName = Stock.get(tempName);
+            sPrice = Stock.get(tempPrice);
+            sQuantity = Stock.get(tempQuantity);
+        } catch (NumberFormatException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<String> getStock() {
