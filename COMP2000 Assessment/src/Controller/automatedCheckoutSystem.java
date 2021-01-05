@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.stockDatabase;
-
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 //This is the Controller in the MVC pattern
@@ -39,4 +41,16 @@ public class automatedCheckoutSystem {
         }
         return auth;
     }*/
+
+    public void writeDB (String sName, String sPrice, String sQuantity) throws IOException {
+        stockDatabase wDB = new stockDatabase();
+        wDB.readStock();
+        int dBLength = wDB.lengthStock();
+        Integer writeID = dBLength / 4 + 1;
+        String sID = writeID.toString();
+        wDB.writeFile(sID);
+        wDB.writeFile(sName);
+        wDB.writeFile(sPrice);
+        wDB.writeFile(sQuantity);
+    }
 }

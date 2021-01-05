@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.io.FileWriter;
 import Controller.automatedCheckoutSystem;
 import Model.stockDatabase;
 
@@ -83,6 +84,14 @@ public class KioskUI extends JFrame {
                 basketContent.setModel(model);
             }
         }));
+
+        newOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newSName = JOptionPane.showInputDialog(adminPanel, "Enter new stock name.", null);
+
+            }
+        });
     }
 
     public void switchPanel(Container container, String panelName) {
