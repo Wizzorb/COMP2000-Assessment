@@ -1,7 +1,6 @@
 package Model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.StandardProtocolFamily;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,8 +97,20 @@ public class stockDatabase {
         }
     }
 
+    public void writeFile(String newS) throws IOException {
+        FileWriter write = new FileWriter(sFile, true);
+        PrintWriter printLine = new PrintWriter(write);
+        printLine.printf("%s" + "%n", newS);
+        printLine.close();
+    }
+
     public ArrayList<String> getStock() {
         return Stock;
+    }
+
+    public int lengthStock() {
+        int lStock = Stock.size();
+        return lStock;
     }
 
 }
