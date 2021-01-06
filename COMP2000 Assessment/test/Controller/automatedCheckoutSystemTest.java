@@ -23,13 +23,22 @@ class automatedCheckoutSystemTest {
 
     @Test
     public void testWrite() throws IOException {
-        String tName = "test";
-        String tPrice = "1.5";
-        String tQuantity = "1";
+        String tName = "test2";
+        String tPrice = "1.51";
+        String tQuantity = "1451";
         aCSTest.writeDB(tName, tPrice, tQuantity);
         stockDatabase aCSTestDB = new stockDatabase();
         aCSTestDB.readStock();
         System.out.println(aCSTestDB.getStock());
+    }
+
+    @Test
+    public void testRemove() throws IOException {
+        String tID = "3";
+        aCSTest.removeDB(tID);
+        stockDatabase removeTestDB = new stockDatabase();
+        removeTestDB.readStock();
+        System.out.println(removeTestDB.getStock());
     }
 
     @AfterEach

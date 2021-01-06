@@ -48,9 +48,15 @@ public class automatedCheckoutSystem {
         int dBLength = wDB.lengthStock();
         Integer writeID = dBLength / 4 + 1;
         String sID = writeID.toString();
-        wDB.writeFile(sID);
-        wDB.writeFile(sName);
-        wDB.writeFile(sPrice);
-        wDB.writeFile(sQuantity);
+        wDB.writeFile(wDB.sFile, sID);
+        wDB.writeFile(wDB.sFile, sName);
+        wDB.writeFile(wDB.sFile, sPrice);
+        wDB.writeFile(wDB.sFile, sQuantity);
+    }
+
+    public void removeDB (String sID) throws IOException {
+        stockDatabase rDB = new stockDatabase();
+        rDB.searchDB(Integer.parseInt(sID));
+        rDB.removeFile(rDB.sID, rDB.sName, rDB.sPrice, rDB.sQuantity);
     }
 }
