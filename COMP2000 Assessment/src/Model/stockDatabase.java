@@ -19,7 +19,7 @@ public class stockDatabase {
     public String sName = " ";
     public String sPrice = "0.0";
     public String sQuantity = "0";
-    File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
+    public File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
 
     //public List<Controller.automatedCheckoutSystem> automated Checkout System = new ArrayList<Controller.automatedCheckoutSystem> ();
 
@@ -97,11 +97,33 @@ public class stockDatabase {
         }
     }
 
-    public void writeFile(String newS) throws IOException {
-        FileWriter write = new FileWriter(sFile, true);
+    public void writeFile(File wFile, String newS) throws IOException {
+        FileWriter write = new FileWriter(wFile, true);
         PrintWriter printLine = new PrintWriter(write);
         printLine.printf("%s" + "%n", newS);
         printLine.close();
+    }
+
+    public void removeFile(String dID, String dName, String dPrice, String dQuantity) throws IOException {
+        File tempFile = new File("COMP2000 Assessment/src/Model/tempFile.txt");
+        BufferedReader reader = new BufferedReader(new FileReader(sFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        String currentLine;
+
+        while((currentLine = reader.readLine()) != null) {
+            String trimmedLine = currentLine;
+            if (trimmedLine.equals(dID)) continue;
+            else if (trimmedLine.equals(dName)) continue;
+            else if (trimmedLine.equals(dPrice)) continue;
+            else if (trimmedLine.equals(dQuantity)) continue;
+            //writer.close();
+            writer.write(currentLine + System.lineSeparator());
+            //writeFile(sFile, currentLine);
+        }
+        writer.close();
+        reader.close();
+        sFile.delete();
+        boolean successful = tempFile.renameTo(sFile);
     }
 
     public ArrayList<String> getStock() {
