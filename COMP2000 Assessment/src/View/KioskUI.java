@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.io.FileWriter;
 import Controller.automatedCheckoutSystem;
@@ -88,8 +89,37 @@ public class KioskUI extends JFrame {
         newOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int success = 1;
                 String newSName = JOptionPane.showInputDialog(adminPanel, "Enter new stock name.", null);
-
+                String newSPrice = JOptionPane.showInputDialog(adminPanel, "Enter new stock price, in pence.", null);
+                String newSQuantity = JOptionPane.showInputDialog(adminPanel, "Enter new stock stored quantity, in numbered format.", null);
+                if (newSName.isEmpty() == false) {
+                    try {
+                        Integer.parseInt(newSPrice);
+                    } catch (NumberFormatException ee) {
+                        success = 0;
+                    }
+                    if (success == 1) {
+                        try {
+                            Integer.parseInt(newSQuantity);
+                        } catch (NumberFormatException eee) {
+                            success = 0;
+                        }
+                        if (success == 1) {
+                            try {
+                                kioskSystem.writeDB(newSName, newSPrice, newSQuantity);
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(adminPanel, "Error: Quantity field is not a number. Try again in the specified format.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(adminPanel, "Error: Price field is not a number. Try again in the specified format.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(adminPanel, "Error: No entry detected in Name box, please try again.");
+                }
             }
         });
     }
