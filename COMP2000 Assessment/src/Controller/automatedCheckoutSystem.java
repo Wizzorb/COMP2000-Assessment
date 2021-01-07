@@ -59,4 +59,11 @@ public class automatedCheckoutSystem {
         rDB.searchDB(Integer.parseInt(sID));
         rDB.removeFile(rDB.sID, rDB.sName, rDB.sPrice, rDB.sQuantity);
     }
+
+    public String currencyConversion(String currency) {
+        int pos = currency.length() - 2;
+        StringBuilder cCBuilder = new StringBuilder(currency);
+        cCBuilder.insert(pos, ".");
+        return cCBuilder.toString();
+    }
 }

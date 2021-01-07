@@ -1,10 +1,7 @@
 package Model;
 
 import java.io.*;
-import java.net.StandardProtocolFamily;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 //This is the Model in the MVC design pattern.
@@ -19,6 +16,7 @@ public class stockDatabase {
     public String sName = " ";
     public String sPrice = "0.0";
     public String sQuantity = "0";
+    public int sPriceTotal;
     public File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
 
     //public List<Controller.automatedCheckoutSystem> automated Checkout System = new ArrayList<Controller.automatedCheckoutSystem> ();
@@ -128,6 +126,16 @@ public class stockDatabase {
 
     public ArrayList<String> getStock() {
         return Stock;
+    }
+
+    public void priceTotal(ArrayList<Integer> prices) {
+        for (int i = 0; i < prices.size(); i++) {
+            sPriceTotal += prices.get(i);
+        }
+    }
+
+    public int getSPriceTotal() {
+        return sPriceTotal;
     }
 
     public int lengthStock() {

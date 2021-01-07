@@ -43,6 +43,16 @@ class stockDatabaseTest {
         }
     }
 
+    @Test
+    public void testPriceTotal() {
+        ArrayList<Integer> testPrice = new ArrayList<Integer>();
+        testPrice.add(100);
+        testPrice.add(200);
+        testPrice.add(520);
+        testDB.priceTotal(testPrice);
+        System.out.println(testDB.getSPriceTotal());
+    }
+
     @AfterEach
     void tearDown() {
         System.out.println("** AFTER **");

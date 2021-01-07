@@ -29,6 +29,17 @@ public class KioskUI extends JFrame {
     private JButton backButton1;
     private JTextPane dBTextPanel;
     private JScrollPane basketScroll;
+    private JPanel cardPanel;
+    private JPasswordField cNumberInput;
+    private JTextField sNumberInput;
+    private JTextField cHolderInput;
+    private JButton submitButton;
+    private JTextField bAddress1Input;
+    private JTextField bAddress2Input;
+    private JPanel cashPanel;
+    private JTextField textField1;
+    private JButton payCashButton;
+    private JLabel totalLabel;
 
     stockDatabase kioskDB = new stockDatabase();
     automatedCheckoutSystem kioskSystem = new automatedCheckoutSystem();
@@ -50,7 +61,7 @@ public class KioskUI extends JFrame {
                 String passwordInsert = JOptionPane.showInputDialog(kioskPanel, "Please insert admin Password", null);
                 int auth = 0;
                 //automatedCheckoutSystem.adminLogin(usernameInsert, passwordInsert, auth);
-                if (usernameInsert == "a" && passwordInsert == "p") {
+                if (usernameInsert == "a" & passwordInsert == "p") {
                     JOptionPane.showConfirmDialog(kioskPanel, "Incorrect credentials");
                 } else {
                     switchPanel(kioskPanel, "adminCard");
@@ -66,6 +77,20 @@ public class KioskUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanel(kioskPanel, "customerCard");
+            }
+        });
+
+        checkoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] options = {"Cash", "Card", "Cancel"};
+                int choice = JOptionPane.showOptionDialog(customerPanel, "How would you like you pay for your shopping?", "Payment Method", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+                if (choice == 0) {
+                    switchPanel(kioskPanel, "cashCard");
+                    totalLabel.setText("Total: 1.99");   //Need to finish setting up
+                } else if (choice == 1) {
+                    switchPanel(kioskPanel, "cardCard");
+                }
             }
         });
 

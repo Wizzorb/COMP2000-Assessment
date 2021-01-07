@@ -41,6 +41,12 @@ class automatedCheckoutSystemTest {
         System.out.println(removeTestDB.getStock());
     }
 
+    @Test
+    public void testCurrency() {
+        String tC = aCSTest.currencyConversion("199");
+        System.out.println(tC);
+    }
+
     @AfterEach
     void tearDown() {
         System.out.println("** AFTER **");
