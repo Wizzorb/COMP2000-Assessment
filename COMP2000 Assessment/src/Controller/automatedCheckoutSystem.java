@@ -1,8 +1,7 @@
 package Controller;
 
 import Model.stockDatabase;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -60,10 +59,32 @@ public class automatedCheckoutSystem {
         rDB.removeFile(rDB.sID, rDB.sName, rDB.sPrice, rDB.sQuantity);
     }
 
+    public String nameSearchDB (String search) {
+        stockDatabase nsDB = new stockDatabase();
+        nsDB.readStock();
+        ArrayList<String> nsList = nsDB.getStock();
+        Integer nsNamePos = nsList.indexOf(search.toLowerCase());
+        String nsID = nsList.get(nsNamePos - 1);
+        return nsID;
+    }
+
     public String currencyConversion(String currency) {
         int pos = currency.length() - 2;
         StringBuilder cCBuilder = new StringBuilder(currency);
         cCBuilder.insert(pos, ".");
         return cCBuilder.toString();
+    }
+
+    public int getTotal (ArrayList<Integer> sPrices) {
+        stockDatabase tDB = new stockDatabase();
+        tDB.priceTotal(sPrices);
+        return tDB.sPriceTotal;
+    }
+
+    public int getChange (String totalPrice, String amountCash) {
+        Integer tP = Integer.parseInt(totalPrice);
+        Integer aC = Integer.parseInt(amountCash);
+        Integer change = aC - tP;
+        return change;
     }
 }

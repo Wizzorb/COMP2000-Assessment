@@ -40,11 +40,13 @@ public class KioskUI extends JFrame {
     private JTextField textField1;
     private JButton payCashButton;
     private JLabel totalLabel;
+    private JPanel recieptPanel;
 
     stockDatabase kioskDB = new stockDatabase();
     automatedCheckoutSystem kioskSystem = new automatedCheckoutSystem();
     ArrayList<String> kioskList = new ArrayList<>();
     ArrayList<String> basketList = new ArrayList<>();
+    ArrayList<Integer> totalList = new ArrayList<>();
 
     //This is a View in the MVC pattern.
     public KioskUI(String title) {
@@ -87,29 +89,58 @@ public class KioskUI extends JFrame {
                 int choice = JOptionPane.showOptionDialog(customerPanel, "How would you like you pay for your shopping?", "Payment Method", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
                 if (choice == 0) {
                     switchPanel(kioskPanel, "cashCard");
-                    totalLabel.setText("Total: 1.99");   //Need to finish setting up
+                    String totalTemp = String.valueOf(kioskSystem.getTotal(totalList));
+                    totalLabel.setText("Total: £" + kioskSystem.currencyConversion(totalTemp));
                 } else if (choice == 1) {
                     switchPanel(kioskPanel, "cardCard");
                 }
             }
         });
 
-        scanButton.addActionListener((new ActionListener() {
+        scanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String scanInsert = JOptionPane.showInputDialog(customerPanel, "Please scan purchase ID below.", null);
                 Integer insertID = Integer.parseInt(scanInsert.trim());
                 kioskDB.readStock();
-                kioskDB.searchDB(insertID);
-                basketList.add(String.valueOf(kioskDB.sID));
-                basketList.add(kioskDB.sName.trim());
-                basketList.add(kioskDB.sPrice.trim());
-                basketList.add(kioskDB.sQuantity.trim());
-                DefaultListModel<String> model = new DefaultListModel<>();
-                model.addElement(basketList.toString());
-                basketContent.setModel(model);
+                try {
+                    kioskDB.searchDB(insertID);
+                    basketList.add(String.valueOf(kioskDB.sID));
+                    basketList.add(kioskDB.sName.trim());
+                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(kioskDB.sQuantity.trim());
+                    DefaultListModel<String> model = new DefaultListModel<>();
+                    model.addElement(basketList.toString());
+                    basketContent.setModel(model);
+                    totalList.add(Integer.parseInt(kioskDB.sPrice.trim()));
+                } catch (IndexOutOfBoundsException eeee) {
+                    JOptionPane.showMessageDialog(customerPanel, "Sorry, the specified item could not be found. Please be precise with the item barcode.");
+                }
             }
-        }));
+        });
+
+        searchItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String scanInsert = JOptionPane.showInputDialog(customerPanel, "Please type in product name below.", null);
+                String scanInsertID = kioskSystem.nameSearchDB(scanInsert);
+                Integer sInsertID = Integer.valueOf(scanInsertID);
+                kioskDB.readStock();
+                try {
+                    kioskDB.searchDB(sInsertID);
+                    basketList.add(String.valueOf(kioskDB.sID));
+                    basketList.add(kioskDB.sName.trim());
+                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(kioskDB.sQuantity.trim());
+                    DefaultListModel<String> model = new DefaultListModel<>();
+                    model.addElement(basketList.toString());
+                    basketContent.setModel(model);
+                    totalList.add(Integer.parseInt(kioskDB.sPrice.trim()));
+                } catch (IndexOutOfBoundsException eee) {
+                    JOptionPane.showMessageDialog(customerPanel, "Sorry, the specified item could not be found. Please be precise with the item name.");
+                }
+            }
+        });
 
         newOrderButton.addActionListener(new ActionListener() {
             @Override
@@ -132,7 +163,7 @@ public class KioskUI extends JFrame {
                         }
                         if (success == 1) {
                             try {
-                                kioskSystem.writeDB(newSName, newSPrice, newSQuantity);
+                                kioskSystem.writeDB(newSName.toLowerCase(), newSPrice, newSQuantity);
                             } catch (IOException ioException) {
                                 ioException.printStackTrace();
                             }
@@ -152,6 +183,16 @@ public class KioskUI extends JFrame {
     public void switchPanel(Container container, String panelName) {
         CardLayout card = (CardLayout) (container.getLayout());
         card.show(container, panelName);
+    }
+
+    public void quantityIncrease (String stockItem) {
+        int stockItemIndex = basketList.indexOf(stockItem);
+        int stockQuantityIndex = stockItemIndex + 2;
+        String stockItemQuantityString = basketList.get(stockQuantityIndex);
+        int stockItemQuantityReplace = Integer.parseInt(stockItemQuantityString);
+        stockItemQuantityReplace++;
+        stockItemQuantityString = String.valueOf(stockItemQuantityReplace);
+        basketList.set(stockQuantityIndex, stockItemQuantityString);
     }
 
     private void createUIComponents() {
