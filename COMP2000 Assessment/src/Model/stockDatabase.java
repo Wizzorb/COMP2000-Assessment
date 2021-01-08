@@ -74,13 +74,6 @@ public class stockDatabase {
     public void searchDB(Integer searchID) {
         try {
             readStock();
-            //int posName = Stock.indexOf((searchID + 1));
-            //int posPrice = Stock.indexOf((searchID + 2));
-            //int postQuantity = Stock.indexOf((searchID + 3));
-            //sID = searchID;
-            //sName = Stock.get(searchID).trim();
-            //sPrice = Stock.get(searchID + 1).trim();
-            //sQuantity = Stock.get(searchID + 2).trim();
             sID = searchID.toString();
             Integer index = Stock.indexOf(sID);
             Integer tempName = index + 1;
@@ -89,6 +82,14 @@ public class stockDatabase {
             sName = Stock.get(tempName);
             sPrice = Stock.get(tempPrice);
             sQuantity = Stock.get(tempQuantity);
+
+            //int posName = Stock.indexOf((searchID + 1));
+            //int posPrice = Stock.indexOf((searchID + 2));
+            //int postQuantity = Stock.indexOf((searchID + 3));
+            //sID = searchID;
+            //sName = Stock.get(searchID).trim();
+            //sPrice = Stock.get(searchID + 1).trim();
+            //sQuantity = Stock.get(searchID + 2).trim();
         } catch (NumberFormatException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
