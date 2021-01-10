@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.io.FileWriter;
 import Controller.automatedCheckoutSystem;
 import Model.stockDatabase;
+import com.company.runnableMain;
 
 public class KioskUI extends JFrame {
     private JPanel kioskPanel;
@@ -40,8 +41,14 @@ public class KioskUI extends JFrame {
     private JTextField textField1;
     private JButton payCashButton;
     private JLabel totalLabel;
-    private JPanel recieptPanel;
+    private JPanel receiptPanel;
+    private JButton deleteOrderButton;
+    private JButton increaseStockButton;
+    private JButton decreaseStockButton;
+    private JButton printReceiptButton;
+    private JTextArea receiptTextArea;
 
+    runnableMain kioskThread = new runnableMain();
     stockDatabase kioskDB = new stockDatabase();
     automatedCheckoutSystem kioskSystem = new automatedCheckoutSystem();
     ArrayList<String> kioskList = new ArrayList<>();
@@ -82,18 +89,33 @@ public class KioskUI extends JFrame {
             }
         });
 
+        increaseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //String itemID = JOptionPane.showInputDialog(customerPanel, "Which item are you re-adding?")
+            }
+        });
+
         checkoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object[] options = {"Cash", "Card", "Cancel"};
                 int choice = JOptionPane.showOptionDialog(customerPanel, "How would you like you pay for your shopping?", "Payment Method", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
-                if (choice == 0) {
+                if (choice == 0) {  //SOMETHING WRONG WITH THIS CODE, FUCKS UP TOTAL FOR SOME REASON ON CHECKOUT. COULD BE ANY OF THE METHODS RELATED TO CURRENCY CONVERSION.
                     switchPanel(kioskPanel, "cashCard");
                     String totalTemp = String.valueOf(kioskSystem.getTotal(totalList));
                     totalLabel.setText("Total: £" + kioskSystem.currencyConversion(totalTemp));
+                    //totalLabel.setText("Total: £" + totalTemp);
                 } else if (choice == 1) {
                     switchPanel(kioskPanel, "cardCard");
                 }
+            }
+        });
+
+        payCashButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchPanel(kioskPanel, "receiptCard");
             }
         });
 
@@ -107,12 +129,12 @@ public class KioskUI extends JFrame {
                     kioskDB.searchDB(insertID);
                     basketList.add(String.valueOf(kioskDB.sID));
                     basketList.add(kioskDB.sName.trim());
-                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(kioskSystem.currencyConversion(kioskDB.sPrice.trim()));
                     basketList.add(kioskDB.sQuantity.trim());
                     DefaultListModel<String> model = new DefaultListModel<>();
                     model.addElement(basketList.toString());
                     basketContent.setModel(model);
-                    totalList.add(Integer.parseInt(kioskDB.sPrice.trim()));
+                    totalList.add(Integer.valueOf(kioskDB.sPrice.trim()));
                 } catch (IndexOutOfBoundsException eeee) {
                     JOptionPane.showMessageDialog(customerPanel, "Sorry, the specified item could not be found. Please be precise with the item barcode.");
                 }
@@ -130,12 +152,12 @@ public class KioskUI extends JFrame {
                     kioskDB.searchDB(sInsertID);
                     basketList.add(String.valueOf(kioskDB.sID));
                     basketList.add(kioskDB.sName.trim());
-                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(kioskSystem.currencyConversion(kioskDB.sPrice.trim()));
                     basketList.add(kioskDB.sQuantity.trim());
                     DefaultListModel<String> model = new DefaultListModel<>();
                     model.addElement(basketList.toString());
                     basketContent.setModel(model);
-                    totalList.add(Integer.parseInt(kioskDB.sPrice.trim()));
+                    totalList.add(Integer.valueOf(kioskDB.sPrice.trim()));
                 } catch (IndexOutOfBoundsException eee) {
                     JOptionPane.showMessageDialog(customerPanel, "Sorry, the specified item could not be found. Please be precise with the item name.");
                 }
@@ -178,6 +200,71 @@ public class KioskUI extends JFrame {
                 }
             }
         });
+
+        deleteOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String dID = JOptionPane.showInputDialog(adminPanel, "Please enter barcode of item to delete.");
+                int warning = JOptionPane.showConfirmDialog(adminPanel, "Please confirm you would like to delete this stock: " + dID, "WARNING", JOptionPane.YES_NO_OPTION);
+                if (warning == JOptionPane.YES_OPTION) {
+                    try {
+                        kioskSystem.removeDB(dID);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                } else {
+                    remove(warning);
+                }
+            }
+        });
+
+        decreaseStockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cQItemID = JOptionPane.showInputDialog(adminPanel, "Please enter item ID.", null);
+                String cQAmountString = JOptionPane.showInputDialog(adminPanel, "Please enter amount to remove.", null);
+                Integer cQAmount = Integer.valueOf(cQAmountString);
+                try {
+                    kioskSystem.changeQuantityDB(cQItemID, cQAmount, false);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+
+        increaseStockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cQItemID = JOptionPane.showInputDialog(adminPanel, "Please enter item ID.", null);
+                String cQAmountString = JOptionPane.showInputDialog(adminPanel, "Please enter amount to add.", null);
+                Integer cQAmount = Integer.valueOf(cQAmountString);
+                try {
+                    kioskSystem.changeQuantityDB(cQItemID, cQAmount, true);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+
+        printReceiptButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                kioskThread.run();
+                receiptTextArea.append("00:12 25/12/2042" + System.lineSeparator() + "SHOP CO. - Thank you for shopping at Shop Co. Remember: We're Right Behind You, Every Step Of The WayTM." + System.lineSeparator());
+
+                Integer s = basketList.size() / 4;
+
+                for (int i = 0;i < s;i++) {
+                    kioskThread.run();
+                    Integer purchaseIDPos = i * 4;
+                    String purchaseName = basketList.get(purchaseIDPos + 1);
+                    String purchasePrice = basketList.get(purchaseIDPos + 2);
+                    String purchaseQuantity = basketList.get(purchaseIDPos + 3);
+                    receiptTextArea.append("x" + purchaseQuantity + " " + purchaseName + " - £" + purchasePrice + System.lineSeparator());
+                }
+                receiptTextArea.append(System.lineSeparator() + "SUBTOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "VAT = £0.00" + System.lineSeparator() + "TOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))));
+            }
+        });
     }
 
     public void switchPanel(Container container, String panelName) {
@@ -193,9 +280,5 @@ public class KioskUI extends JFrame {
         stockItemQuantityReplace++;
         stockItemQuantityString = String.valueOf(stockItemQuantityReplace);
         basketList.set(stockQuantityIndex, stockItemQuantityString);
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }

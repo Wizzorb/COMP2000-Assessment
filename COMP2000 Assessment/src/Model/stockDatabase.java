@@ -16,7 +16,7 @@ public class stockDatabase {
     public String sName = " ";
     public String sPrice = "0.0";
     public String sQuantity = "0";
-    public int sPriceTotal;
+    public String sPriceTotal;
     public File sFile = new File("COMP2000 Assessment/src/Model/StockFile.txt");
 
     //public List<Controller.automatedCheckoutSystem> automated Checkout System = new ArrayList<Controller.automatedCheckoutSystem> ();
@@ -72,17 +72,20 @@ public class stockDatabase {
     }
 
     public void searchDB(Integer searchID) {
+        readStock();
+        Integer searchIDPos = searchID * 4;
         try {
-            readStock();
-            sID = searchID.toString();
-            Integer index = Stock.indexOf(sID);
-            Integer tempName = index + 1;
-            Integer tempPrice = index + 2;
-            Integer tempQuantity = index + 3;
-            sName = Stock.get(tempName);
-            sPrice = Stock.get(tempPrice);
-            sQuantity = Stock.get(tempQuantity);
-
+            boolean valid = (searchIDPos >= 0) && (searchIDPos < Stock.size());
+            if (valid == true) {
+                sID = searchID.toString();
+                Integer index = Stock.indexOf(sID);
+                Integer tempName = index + 1;
+                Integer tempPrice = index + 2;
+                Integer tempQuantity = index + 3;
+                sName = Stock.get(tempName);
+                sPrice = Stock.get(tempPrice);
+                sQuantity = Stock.get(tempQuantity);
+            }
             //int posName = Stock.indexOf((searchID + 1));
             //int posPrice = Stock.indexOf((searchID + 2));
             //int postQuantity = Stock.indexOf((searchID + 3));
@@ -90,8 +93,8 @@ public class stockDatabase {
             //sName = Stock.get(searchID).trim();
             //sPrice = Stock.get(searchID + 1).trim();
             //sQuantity = Stock.get(searchID + 2).trim();
-        } catch (NumberFormatException e) {
-            System.out.println("An error occurred.");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("An error occurred. The ID");
             e.printStackTrace();
         }
     }
@@ -125,17 +128,49 @@ public class stockDatabase {
         boolean successful = tempFile.renameTo(sFile);
     }
 
+    public void dBQuantityChange(String itemID, Integer qChangeAmount, boolean plusMinus) throws IOException {
+        readStock();
+        searchDB(Integer.valueOf(itemID));
+        Integer quantityPos = Stock.indexOf(sQuantity);
+        Integer sQInt = Integer.valueOf(sQuantity);
+
+        File tempFile = new File("COMP2000 Assessment/src/Model/tempFile.txt");
+        BufferedReader reader = new BufferedReader(new FileReader(sFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        String currentLine;
+
+        while((currentLine = reader.readLine()) != null) {
+            String trimmedLine = currentLine;
+            if (trimmedLine.equals(sQuantity)) {
+                if (plusMinus == true) {
+                    Integer quantityChange = sQInt + qChangeAmount;
+                    currentLine = quantityChange.toString();
+                } else if (plusMinus == false) {
+                    Integer quantityChange = sQInt - qChangeAmount;
+                    currentLine = quantityChange.toString();
+                }
+            }
+            writer.write(currentLine + System.lineSeparator());
+        }
+        writer.close();
+        reader.close();
+        sFile.delete();
+        boolean successful = tempFile.renameTo(sFile);
+    }
+
     public ArrayList<String> getStock() {
         return Stock;
     }
 
     public void priceTotal(ArrayList<Integer> prices) {
+        int sPriceTotalInt = 0;
         for (int i = 0; i < prices.size(); i++) {
-            sPriceTotal += prices.get(i);
+            sPriceTotalInt += prices.get(i);
         }
+        sPriceTotal = String.valueOf(sPriceTotalInt);
     }
 
-    public int getSPriceTotal() {
+    public String getSPriceTotal() {
         return sPriceTotal;
     }
 
