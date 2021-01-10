@@ -2,6 +2,7 @@ package Model;
 
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,6 +52,16 @@ class stockDatabaseTest {
         testPrice.add(520);
         testDB.priceTotal(testPrice);
         System.out.println(testDB.getSPriceTotal());
+    }
+
+    @Test //Passed, but only prints out the stock before the quantity change for some reason.
+    public void testDBQuantityChange() throws IOException {
+        String testItemID = "2";
+        Integer testChangeAmount = 5;
+        boolean testMinus = false;
+        testDB.dBQuantityChange(testItemID, testChangeAmount, testMinus);
+        testDB.readStock();
+        System.out.println(testDB.getStock());
     }
 
     @AfterEach

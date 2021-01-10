@@ -68,17 +68,42 @@ public class automatedCheckoutSystem {
         return nsID;
     }
 
-    public String currencyConversion(String currency) {
-        int pos = currency.length() - 2;
-        StringBuilder cCBuilder = new StringBuilder(currency);
-        cCBuilder.insert(pos, ".");
-        return cCBuilder.toString();
+    public void changeQuantityDB (String itemID, Integer qChange, boolean plusMinus) throws IOException {
+        stockDatabase cQDB = new stockDatabase();
+        cQDB.dBQuantityChange(itemID, qChange, plusMinus);
     }
 
-    public int getTotal (ArrayList<Integer> sPrices) {
+    /*public ArrayList<String> basketAdd (ArrayList<String> basket, Integer searchID) {
+        stockDatabase bDB = new stockDatabase();
+        bDB.readStock();
+        bDB.searchDB(searchID);
+        if (bDB.sName == basket.get(2)) {
+            bD
+        }
+    }*/
+
+    public String currencyConversion(String currency) {
+        StringBuilder cCBuilder = new StringBuilder(currency);
+        Integer pos = currency.length() - 2;
+        cCBuilder.insert(pos, ".");
+        return cCBuilder.toString();
+
+        /*if (currency.length() <= 2) {
+            String newCurrency = "£0." + currency;
+            return newCurrency;
+        } else {
+            String newCurrency = "£" + currency;
+            StringBuilder cCBuilder = new StringBuilder(currency);
+            Integer pos = newCurrency.length() - 3;
+            cCBuilder.insert(pos, ".");
+            return cCBuilder.toString();
+        }*/
+    }
+
+    public int getTotal (ArrayList<Integer> items) {
         stockDatabase tDB = new stockDatabase();
-        tDB.priceTotal(sPrices);
-        return tDB.sPriceTotal;
+        tDB.priceTotal(items);
+        return Integer.parseInt(tDB.getSPriceTotal());
     }
 
     public int getChange (String totalPrice, String amountCash) {

@@ -4,6 +4,7 @@ import Model.stockDatabase;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,6 +46,12 @@ class automatedCheckoutSystemTest {
     public void testCurrency() {
         String tC = aCSTest.currencyConversion("199");
         System.out.println(tC);
+    }
+
+    @Test
+    public void testGetTotal() {
+        ArrayList<String> testItems = new ArrayList<>();
+        //testItems.add()
     }
 
     @AfterEach
