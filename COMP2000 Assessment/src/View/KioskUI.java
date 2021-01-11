@@ -92,7 +92,34 @@ public class KioskUI extends JFrame {
         increaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //String itemID = JOptionPane.showInputDialog(customerPanel, "Which item are you re-adding?")
+                String itemID = JOptionPane.showInputDialog(customerPanel, "Which item quantity are you increasing? Please insert bardcode.");
+                String itemChange = JOptionPane.showInputDialog(customerPanel, "How much would you like to add to " + basketList.get(Integer.parseInt(itemID) + 1) + "? Current amount is: " + basketList.get(Integer.valueOf(itemID) + 3));
+                if (Integer.parseInt(itemID) * 4 > basketList.size()) {
+                    JOptionPane.showMessageDialog(customerPanel, "Sorry, the item is not in your basket.");
+                } else {
+                    Integer quantityPos = basketList.indexOf(itemID) + 3;
+                    Integer originalPrice = Integer.parseInt(basketList.get(quantityPos - 1)) / Integer.parseInt(basketList.get(quantityPos));
+                    Integer newQuantity = Integer.parseInt(basketList.get(quantityPos)) + Integer.parseInt(itemChange);
+                    basketList.set(quantityPos, String.valueOf(newQuantity));
+                    basketList.set(quantityPos - 1, String.valueOf(originalPrice * newQuantity));
+                }
+            }
+        });
+
+        decreaseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String itemID = JOptionPane.showInputDialog(customerPanel, "Which item quantity are you decreasing? Please insert bardcode.");
+                String itemChange = JOptionPane.showInputDialog(customerPanel, "How much would you like to remove from " + basketList.get(Integer.parseInt(itemID) + 1) + "? Current amount is: " + basketList.get(Integer.valueOf(itemID) + 3));
+                if (Integer.parseInt(itemID) * 4 > basketList.size()) {
+                    JOptionPane.showMessageDialog(customerPanel, "Sorry, the item is not in your basket.");
+                } else {
+                    Integer quantityPos = basketList.indexOf(itemID) + 3;
+                    Integer originalPrice = Integer.parseInt(basketList.get(quantityPos - 1)) / Integer.parseInt(basketList.get(quantityPos));
+                    Integer newQuantity = Integer.parseInt(basketList.get(quantityPos)) - Integer.parseInt(itemChange);
+                    basketList.set(quantityPos, String.valueOf(newQuantity));
+                    basketList.set(quantityPos - 1, String.valueOf(originalPrice * newQuantity));
+                }
             }
         });
 
