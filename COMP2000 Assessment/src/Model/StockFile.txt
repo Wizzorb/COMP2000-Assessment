@@ -1,7 +1,7 @@
 1
 milk
 89
-100
+80
 2
 chocolate
 112
