@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.FileWriter;
-import Controller.automatedCheckoutSystem;
+import Controller.*;
 import Model.stockDatabase;
 import com.company.runnableMain;
 
@@ -18,7 +18,7 @@ public class KioskUI extends JFrame {
     private JButton customerButton;
     private JPanel adminPanel;
     private JTextArea dBTextArea;
-    private JButton backButton;
+    private JButton adminBackButton;
     private JButton newOrderButton;
     private JPanel customerPanel;
     private JList basketContent;
@@ -27,11 +27,11 @@ public class KioskUI extends JFrame {
     private JButton checkoutButton;
     private JButton increaseButton;
     private JButton decreaseButton;
-    private JButton backButton1;
+    private JButton customerBackButton;
     private JTextPane dBTextPanel;
     private JScrollPane basketScroll;
     private JPanel cardPanel;
-    private JPasswordField cNumberInput;
+    private JTextField cNumberInput;
     private JTextField sNumberInput;
     private JTextField cHolderInput;
     private JButton submitButton;
@@ -75,10 +75,17 @@ public class KioskUI extends JFrame {
                 } else {
                     switchPanel(kioskPanel, "adminCard");
                     //kioskDB.readStock(kioskList);
-                    automatedCheckoutSystem.dBRead(basketList);
-                    kioskList.add(automatedCheckoutSystem.dBRead(basketList).toString());
-                    dBTextPanel.setText(kioskList.toString());
+                    automatedCheckoutSystem.dBRead(kioskList);
+                    //kioskList.add(automatedCheckoutSystem.dBRead(basketList).toString());
+                    dBTextPanel.setText(String.valueOf(kioskList));
                 }
+            }
+        });
+
+        adminBackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                backButton("loginCard");
             }
         });
 
@@ -89,11 +96,18 @@ public class KioskUI extends JFrame {
             }
         });
 
+        customerBackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchPanel(kioskPanel, "loginCard");
+            }
+        });
+
         increaseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String itemID = JOptionPane.showInputDialog(customerPanel, "Which item quantity are you increasing? Please insert bardcode.");
-                String itemChange = JOptionPane.showInputDialog(customerPanel, "How much would you like to add to " + basketList.get(Integer.parseInt(itemID) + 1) + "? Current amount is: " + basketList.get(Integer.valueOf(itemID) + 3));
+                String itemChange = JOptionPane.showInputDialog(customerPanel, "How much would you like to add to " + basketList.get(Integer.parseInt(itemID)) + "? Current amount is: " + basketList.get(Integer.valueOf(itemID) + 2));
                 if (Integer.parseInt(itemID) * 4 > basketList.size()) {
                     JOptionPane.showMessageDialog(customerPanel, "Sorry, the item is not in your basket.");
                 } else {
@@ -101,7 +115,13 @@ public class KioskUI extends JFrame {
                     Integer originalPrice = Integer.parseInt(basketList.get(quantityPos - 1)) / Integer.parseInt(basketList.get(quantityPos));
                     Integer newQuantity = Integer.parseInt(basketList.get(quantityPos)) + Integer.parseInt(itemChange);
                     basketList.set(quantityPos, String.valueOf(newQuantity));
-                    basketList.set(quantityPos - 1, String.valueOf(originalPrice * newQuantity));
+                    //Integer newPrice = originalPrice * newQuantity;
+                    //basketList.set(quantityPos - 1, String.valueOf(newPrice));
+                    DefaultListModel<String> model = new DefaultListModel<>();
+                    model.addElement(basketList.toString());
+                    basketContent.setModel(model);
+                    totalList.add(originalPrice * newQuantity);
+                    totalList.remove(originalPrice);
                 }
             }
         });
@@ -119,6 +139,7 @@ public class KioskUI extends JFrame {
                     Integer newQuantity = Integer.parseInt(basketList.get(quantityPos)) - Integer.parseInt(itemChange);
                     basketList.set(quantityPos, String.valueOf(newQuantity));
                     basketList.set(quantityPos - 1, String.valueOf(originalPrice * newQuantity));
+                    validate();
                 }
             }
         });
@@ -128,7 +149,7 @@ public class KioskUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Object[] options = {"Cash", "Card", "Cancel"};
                 int choice = JOptionPane.showOptionDialog(customerPanel, "How would you like you pay for your shopping?", "Payment Method", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
-                if (choice == 0) {  //SOMETHING WRONG WITH THIS CODE, FUCKS UP TOTAL FOR SOME REASON ON CHECKOUT. COULD BE ANY OF THE METHODS RELATED TO CURRENCY CONVERSION.
+                if (choice == 0) {  //SOMETHING WRONG WITH THIS CODE, FUCKS UP TOTAL FOR SOME REASON ON CHECKOUT. COULD BE ANY OF THE METHODS RELATED TO CURRENCY CONVERSION. Nevermind, fixed.
                     switchPanel(kioskPanel, "cashCard");
                     String totalTemp = String.valueOf(kioskSystem.getTotal(totalList));
                     totalLabel.setText("Total: £" + kioskSystem.currencyConversion(totalTemp));
@@ -146,6 +167,48 @@ public class KioskUI extends JFrame {
             }
         });
 
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cardNum = String.valueOf(cNumberInput.getText());
+                String securityNum = String.valueOf(sNumberInput.getText());
+                String cHolderName = String.valueOf(cHolderInput.getText());
+                String bAddressOne = String.valueOf(bAddress1Input.getText());
+                String bAddressTwo = String.valueOf(bAddress2Input.getText());
+                boolean isCNum = cardNum.chars().allMatch( Character::isDigit );
+                boolean isSNum = securityNum.chars().allMatch( Character::isDigit );
+
+                if (cardNum.length() == 16) {
+                    if (isCNum == true) {
+                        if (securityNum.length() == 3 | securityNum.length() == 4) {
+                            if (isSNum == true) {
+                                if (cHolderInput.getText().isEmpty() == false) {
+                                    if (bAddress1Input.getText().isEmpty() == false | bAddress2Input.getText().isEmpty() == false) {
+                                        bank confirmBank = new bank();
+                                        confirmBank.acceptDenyPayment(cardNum, securityNum, cHolderName, bAddressOne, bAddressTwo);
+                                        JOptionPane.showConfirmDialog(cardPanel, "Your payment has been accepted!");
+                                        switchPanel(kioskPanel, "receiptCard");
+                                    } else {
+                                        JOptionPane.showConfirmDialog(cardPanel, "You did not input an address, please try again.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                                    }
+                                } else {
+                                    JOptionPane.showConfirmDialog(cardPanel, "You did not input a card holder name, please try again.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                                }
+                            } else {
+                                JOptionPane.showConfirmDialog(cardPanel, "Sorry, the security number inserted contains invalid characters, please double check your input.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                            }
+                        } else {
+                            JOptionPane.showConfirmDialog(cardPanel, "Sorry, the security number is not the correct size, please double check your input.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                        }
+                    } else {
+                        JOptionPane.showConfirmDialog(cardPanel, "Sorry, the card number inserted contains invalid characters. Please double check your input.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                    }
+                } else {
+                    JOptionPane.showConfirmDialog(cardPanel, "Sorry, the card number is not the correct size, please double check your input.", "Error", JOptionPane.OK_CANCEL_OPTION);
+                }
+            }
+        });
+
         scanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -156,8 +219,8 @@ public class KioskUI extends JFrame {
                     kioskDB.searchDB(insertID);
                     basketList.add(String.valueOf(kioskDB.sID));
                     basketList.add(kioskDB.sName.trim());
-                    basketList.add(kioskSystem.currencyConversion(kioskDB.sPrice.trim()));
-                    basketList.add(kioskDB.sQuantity.trim());
+                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(String.valueOf(1));
                     DefaultListModel<String> model = new DefaultListModel<>();
                     model.addElement(basketList.toString());
                     basketContent.setModel(model);
@@ -179,8 +242,8 @@ public class KioskUI extends JFrame {
                     kioskDB.searchDB(sInsertID);
                     basketList.add(String.valueOf(kioskDB.sID));
                     basketList.add(kioskDB.sName.trim());
-                    basketList.add(kioskSystem.currencyConversion(kioskDB.sPrice.trim()));
-                    basketList.add(kioskDB.sQuantity.trim());
+                    basketList.add(kioskDB.sPrice.trim());
+                    basketList.add(String.valueOf(1));
                     DefaultListModel<String> model = new DefaultListModel<>();
                     model.addElement(basketList.toString());
                     basketContent.setModel(model);
@@ -213,6 +276,9 @@ public class KioskUI extends JFrame {
                         if (success == 1) {
                             try {
                                 kioskSystem.writeDB(newSName.toLowerCase(), newSPrice, newSQuantity);
+                                kioskList.clear();
+                                automatedCheckoutSystem.dBRead(kioskList);
+                                dBTextPanel.setText(String.valueOf(kioskList));
                             } catch (IOException ioException) {
                                 ioException.printStackTrace();
                             }
@@ -236,6 +302,9 @@ public class KioskUI extends JFrame {
                 if (warning == JOptionPane.YES_OPTION) {
                     try {
                         kioskSystem.removeDB(dID);
+                        kioskList.clear();
+                        automatedCheckoutSystem.dBRead(kioskList);
+                        dBTextPanel.setText(String.valueOf(kioskList));
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -253,6 +322,9 @@ public class KioskUI extends JFrame {
                 Integer cQAmount = Integer.valueOf(cQAmountString);
                 try {
                     kioskSystem.changeQuantityDB(cQItemID, cQAmount, false);
+                    kioskList.clear();
+                    automatedCheckoutSystem.dBRead(kioskList);
+                    dBTextPanel.setText(String.valueOf(kioskList));
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -267,6 +339,9 @@ public class KioskUI extends JFrame {
                 Integer cQAmount = Integer.valueOf(cQAmountString);
                 try {
                     kioskSystem.changeQuantityDB(cQItemID, cQAmount, true);
+                    kioskList.clear();
+                    automatedCheckoutSystem.dBRead(kioskList);
+                    dBTextPanel.setText(String.valueOf(kioskList));
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -287,9 +362,9 @@ public class KioskUI extends JFrame {
                     String purchaseName = basketList.get(purchaseIDPos + 1);
                     String purchasePrice = basketList.get(purchaseIDPos + 2);
                     String purchaseQuantity = basketList.get(purchaseIDPos + 3);
-                    receiptTextArea.append("x" + purchaseQuantity + " " + purchaseName + " - £" + purchasePrice + System.lineSeparator());
+                    receiptTextArea.append("x" + purchaseQuantity + " " + purchaseName + " - £" + kioskSystem.currencyConversion(purchasePrice) + System.lineSeparator());
                 }
-                receiptTextArea.append(System.lineSeparator() + "SUBTOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "VAT = £0.00" + System.lineSeparator() + "TOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))));
+                receiptTextArea.append(System.lineSeparator() + "SUBTOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "VAT = £.00" + System.lineSeparator() + "TOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))));
             }
         });
     }
@@ -299,7 +374,11 @@ public class KioskUI extends JFrame {
         card.show(container, panelName);
     }
 
-    public void quantityIncrease (String stockItem) {
+    public void backButton(String backCardName) {
+        switchPanel(kioskPanel, backCardName);
+    }
+
+    /*public void quantityIncrease (String stockItem) {
         int stockItemIndex = basketList.indexOf(stockItem);
         int stockQuantityIndex = stockItemIndex + 2;
         String stockItemQuantityString = basketList.get(stockQuantityIndex);
@@ -307,5 +386,5 @@ public class KioskUI extends JFrame {
         stockItemQuantityReplace++;
         stockItemQuantityString = String.valueOf(stockItemQuantityReplace);
         basketList.set(stockQuantityIndex, stockItemQuantityString);
-    }
+    }*/
 }
