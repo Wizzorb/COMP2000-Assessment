@@ -73,10 +73,6 @@ public class automatedCheckoutSystem {
         cQDB.dBQuantityChange(itemID, qChange, plusMinus);
     }
 
-    public void changeQuantityBasket (String itemID, String changeAmount, boolean plusMinus) {
-
-    }
-
     /*public ArrayList<String> basketAdd (ArrayList<String> basket, Integer searchID) {
         stockDatabase bDB = new stockDatabase();
         bDB.readStock();

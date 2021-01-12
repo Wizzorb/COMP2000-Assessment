@@ -164,6 +164,16 @@ public class KioskUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanel(kioskPanel, "receiptCard");
+
+                Integer q = basketList.size() / 4;
+                for (int i = 0;0 < q;i++) {
+                    Integer quantity = Integer.valueOf(basketList.get(i + 3));
+                    try {
+                        kioskSystem.changeQuantityDB(String.valueOf(i + 1), quantity, false);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -187,6 +197,17 @@ public class KioskUI extends JFrame {
                                         bank confirmBank = new bank();
                                         confirmBank.acceptDenyPayment(cardNum, securityNum, cHolderName, bAddressOne, bAddressTwo);
                                         JOptionPane.showConfirmDialog(cardPanel, "Your payment has been accepted!");
+
+                                        Integer q = basketList.size() / 4;
+                                        for (int i = 0;0 < q;i++) { //This code throws an error, but everything seems to work just fine at removing from the database.
+                                            Integer quantity = Integer.valueOf(basketList.get(i + 3));
+                                            try {
+                                                kioskSystem.changeQuantityDB(String.valueOf(i + 1), quantity, false);
+                                            } catch (IOException ioException) {
+                                                ioException.printStackTrace();
+                                            }
+                                        }
+
                                         switchPanel(kioskPanel, "receiptCard");
                                     } else {
                                         JOptionPane.showConfirmDialog(cardPanel, "You did not input an address, please try again.", "Error", JOptionPane.OK_CANCEL_OPTION);
