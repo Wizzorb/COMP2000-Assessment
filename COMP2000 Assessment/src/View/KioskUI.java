@@ -311,17 +311,21 @@ public class KioskUI extends JFrame {
         payCashButton.addActionListener(new ActionListener() {      //Pays the total amount in cash.
             @Override
             public void actionPerformed(ActionEvent e) {
-                //cashPaid = Integer.parseInt(String.valueOf(cashInput));   //Attempted to track the amount entered, but caused a really bizarre error. It's to do with reading from the text entered, but I have been unable to find a workaround. Hopefully the rest of the code can prove I'd be able to do it.
-                switchPanel(kioskPanel, "receiptCard");
+                cashPaid = Integer.parseInt(String.valueOf(cashInput.getText()));   //Attempted to track the amount entered, but caused a really bizarre error. It's to do with reading from the text entered, but I have been unable to find a workaround. Hopefully the rest of the code can prove I'd be able to do it.
+                if (cashPaid >= kioskSystem.getTotal(totalList)) {
+                    switchPanel(kioskPanel, "receiptCard");
 
-                Integer q = basketList.size() / 4;  //Divided by 4, to represent each item entered into the database.
-                for (int i = 0;0 < q;i++) {
-                    Integer quantity = Integer.valueOf(basketList.get(i + 3));
-                    try {
-                        kioskSystem.changeQuantityDB(String.valueOf(i + 1), quantity, false);
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
+                    Integer q = basketList.size() / 4;  //Divided by 4, to represent each item entered into the database.
+                    for (int i = 0;0 < q;i++) {
+                        Integer quantity = Integer.valueOf(basketList.get(i + 3));
+                        try {
+                            kioskSystem.changeQuantityDB(String.valueOf(i + 1), quantity, false);
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
                     }
+                } else {
+                    JOptionPane.showMessageDialog(cashPanel, "Payment insufficient.");
                 }
             }
         });
@@ -346,9 +350,10 @@ public class KioskUI extends JFrame {
                                         bank confirmBank = new bank();
                                         confirmBank.acceptDenyPayment(cardNum, securityNum, cHolderName, bAddressOne, bAddressTwo);
                                         JOptionPane.showConfirmDialog(cardPanel, "Your payment has been accepted!");
+                                        cashPaid = kioskSystem.getTotal(totalList);
 
                                         Integer q = basketList.size() / 4;
-                                        for (int i = 0;0 < q;i++) { //This code throws an error, but everything seems to work just fine at removing from the database.
+                                        for (int i = 0;0 < q;i++) { //This code throws an error, but everything seems to work just fine at removing from the database. GOT IT TO WORK FINALLY, FORGOT THE GETTEXT STUFF.
                                             Integer quantity = Integer.valueOf(basketList.get(i + 3));
                                             try {
                                                 kioskSystem.changeQuantityDB(String.valueOf(i + 1), quantity, false);
@@ -383,6 +388,7 @@ public class KioskUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 kioskThread.run();
+                System.out.println("This is the beginning of the kioskThread thread.");
                 receiptTextArea.append("00:12 25/12/2042" + System.lineSeparator() + "SHOP CO. - Thank you for shopping at Shop Co. Remember: We're Right Behind You, Every Step Of The WayTM." + System.lineSeparator());
 
                 Integer s = basketList.size() / 4;
@@ -396,7 +402,8 @@ public class KioskUI extends JFrame {
                     System.out.println("This is item " + purchaseName);     // Thread wasn't able to output new value for each thread, so this piggybacks off the thread to print the name.
                     receiptTextArea.append("x" + purchaseQuantity + " " + purchaseName + " - £" + kioskSystem.currencyConversion(purchasePrice) + System.lineSeparator());
                 }
-                receiptTextArea.append(System.lineSeparator() + "SUBTOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "VAT = £.00" + System.lineSeparator() + "TOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))));
+                receiptTextArea.append(System.lineSeparator() + "SUBTOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "VAT = £.00" + System.lineSeparator() + "TOTAL: £" + kioskSystem.currencyConversion(String.valueOf(kioskSystem.getTotal(totalList))) + System.lineSeparator() + "PAID: £" + kioskSystem.currencyConversion(String.valueOf(cashPaid)) + System.lineSeparator() + "CHANGE: £" + kioskSystem.currencyConversion(String.valueOf(cashPaid - kioskSystem.getTotal(totalList))));
+                System.out.println("This is the end of the kioskThread thread.");
             }
         });
     }
