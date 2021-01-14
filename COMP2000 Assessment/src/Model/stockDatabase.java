@@ -96,7 +96,6 @@ public class stockDatabase {
             else if (trimmedLine.equals(dName)) continue;
             else if (trimmedLine.equals(dPrice)) continue;
             else if (trimmedLine.equals(dQuantity)) continue;
-            //writer.close();
             writer.write(currentLine + System.lineSeparator());
             //writeFile(sFile, currentLine);
         }
